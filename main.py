@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 
 from discord.ext import commands
 
+
+
+
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -37,6 +40,11 @@ async def bread(ctx, number=1):
     for i in range(number):
         message += '🍞'
     await ctx.send(message)
+
+@bot.command(name='temp', help='~ Responds with bread')
+async def temp(ctx, number=21):
+    response = 'Temperature is set to ' + str(number)
+    await ctx.send(response)
 
 
 @bot.command(name='roll_dice', help='~ Simulates rolling dice.')
