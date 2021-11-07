@@ -2,6 +2,7 @@ import dash
 from dash.dependencies import Input, Output
 import dash_daq as daq
 from dash import html
+import csv
 
 app = dash.Dash(__name__)
 
@@ -10,6 +11,14 @@ humidVal = 40
 
 #print("Temp val: ")
 #val = input("Enter your value: ")
+
+def write_to_csv_light(value):
+    with open('Light_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
 app.layout = html.Div([
     daq.Gauge(
@@ -45,14 +54,13 @@ app.layout = html.Div([
     Output('my-toggle-switch-output', 'children'),
     Input('my-toggle-switch', 'value')
 )
-
 def update_output(value):
     if value == True:
         ret = "true"
-        # Clyvpi_MQTT.client.publish("IoTlab/LEDLight", "ON")
+        write_to_csv_light("ON")
     elif value == False:
         ret = "false"
-            # Clyvpi_MQTT.client.publish("IoTlab/LEDLight", "OFF")
+        write_to_csv_light("OFF")
     return 'The switch is {}.'.format(value)
 
 @app.callback(Output('my-gauge-1', 'value'), Input('my-gauge-1', 'value'))

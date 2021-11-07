@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import csv
 import ValueStorage
 
-def write_to_csv():
+def write_to_csv_temperature():
     with open('MQTT_file.csv', mode='w') as csv_file:
         fieldnames = ['Parameter', 'Value']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
@@ -10,6 +10,26 @@ def write_to_csv():
         writer.writeheader()
         writer.writerow({'Parameter': 'Temperature', 'Value': f'{ValueStorage.MQTT_temperature}'})
         writer.writerow({'Parameter': 'Humidity', 'Value': f'{ValueStorage.MQTT_humidity}'})
+
+def read_from_csv_light_publish():
+    final_string = ""
+    with open('Light_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            if row["Parameter"] == "Light":
+                ValueStorage.Dash_Light = row["Value"]
+                if ValueStorage.Dash_Light != ValueStorage.Previous_Light_Value:
+                    ValueStorage.Previous_Light_Value = ValueStorage.Dash_Light
+                    client.publish("IoTlab/LEDLight", str(ValueStorage.Dash_Light))
+            line_count += 1
+        print(f'Processed {line_count} lines.')
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -26,9 +46,8 @@ def on_message(client, userdata, msg):
         ValueStorage.MQTT_temperature = float(msg.payload)
     if msg.topic == "IoTlab/humidity":
         ValueStorage.MQTT_humidity = float(msg.payload)
-
-        write_to_csv()
-
+        write_to_csv_temperature()
+    read_from_csv_light_publish()
 def on_publish(client,userdata,result):             #create function for callback
     print("data published \n")
     pass
