@@ -6,7 +6,7 @@ import discord
 from dotenv import load_dotenv
 
 from discord.ext import commands
-
+import csv
 
 
 
@@ -92,10 +92,29 @@ async def formatting(ctx):
     embed.set_footer(text="This is an automatically updated message!")
     await ctx.send(embed=embed)
 
+def read_csv():
+    final_string = ""
+    with open('MQTT_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            final_string += f'\t{row["Parameter"]} has value {row["Value"]}'
+            line_count += 1
+        print(f'Processed {line_count} lines.')
+        return final_string
+
 @bot.command(name='showtemp', help='~ Testing')
 async def showtemp(ctx):
     channel = bot.get_channel(896192318711955477)
     print("Sending the temperature")
-    await channel.send("")
+    send_string = read_csv()
+
+    await channel.send(str(send_string))
+    await ctx.send(str(send_string))
 
 bot.run(TOKEN)
