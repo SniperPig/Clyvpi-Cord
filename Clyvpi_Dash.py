@@ -1,10 +1,13 @@
 import dash
 from dash.dependencies import Input, Output
 import dash_daq as daq
-import dash_core_components as dcc
 from dash import html
 
 app = dash.Dash(__name__)
+
+tempVal = 23
+#print("Temp val: ")
+#val = input("Enter your value: ")
 
 app.layout = html.Div([
     daq.Gauge(
@@ -14,16 +17,9 @@ app.layout = html.Div([
         showCurrentValue=True,
         units="C",
         size=450,
-        value=0,
+        value=23,
         max=40,
         min=-30,
-    ),
-    dcc.Slider(
-        id='my-gauge-slider-1',
-        min=-30,
-        max=40,
-        step=1,
-        value=5
     ),
     daq.ToggleSwitch(
         id='my-toggle-switch',
@@ -36,6 +32,7 @@ app.layout = html.Div([
     Output('my-toggle-switch-output', 'children'),
     Input('my-toggle-switch', 'value')
 )
+
 def update_output(value):
     if value == True:
         ret = "true"
@@ -45,7 +42,7 @@ def update_output(value):
             # Clyvpi_MQTT.client.publish("IoTlab/LEDLight", "OFF")
     return 'The switch is {}.'.format(value)
 
-@app.callback(Output('my-gauge-1', 'value'), Input('my-gauge-slider-1', 'value'))
+@app.callback(Output('my-gauge-1', 'value'), Input('my-gauge-1', 'value'))
 def update_output(value):
     return value
 
