@@ -9,6 +9,8 @@ app = dash.Dash(__name__)
 tempVal = 23
 humidVal = 40
 
+temp_id = 0
+
 #print("Temp val: ")
 #val = input("Enter your value: ")
 
@@ -20,18 +22,29 @@ def write_to_csv_light(value):
         writer.writeheader()
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
-app.layout = html.Div([
-    daq.Gauge(
-        id='my-gauge-1',
+def initializeGauge():
+    new_temp = tempVal + 1
+    new_temp_id = 1
+
+    return daq.Gauge(
+        id='gauge1',
         label="Temperature",
         color={"gradient": True, "ranges": {"Blue": [-30, -16], "Yellow": [-16, 20], "Red": [20, 40]}},
         showCurrentValue=True,
         units="C",
         size=450,
-        value=tempVal,
+        value=new_temp,
         max=40,
         min=-30,
-    ),
+    )
+
+def loop():
+    #print(initializeGauge())
+    for x in range(10):
+        initializeGauge()
+
+app.layout = html.Div([
+    initializeGauge(),
     daq.Gauge(
         id='my-gauge-2',
         label="Humidity ",
@@ -63,7 +76,7 @@ def update_output(value):
         write_to_csv_light("OFF")
     return 'The switch is {}.'.format(value)
 
-@app.callback(Output('my-gauge-1', 'value'), Input('my-gauge-1', 'value'))
+@app.callback(Output('gauge1', 'value'), Input('gauge1', 'value'))
 def update_output(value):
     return value
 

@@ -24,7 +24,16 @@ def write_to_csv_light(value):
         writer.writeheader()
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
-def read_csv_temperature():
+def write_to_csv_fan(value):
+    with open('Fan_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Fan', 'Value': f'{value}'})
+
+
+def read_csv_MQTT():
     final_string = ""
     with open('MQTT_file.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -39,6 +48,8 @@ def read_csv_temperature():
                 final_string += f'**{row["Parameter"]}** : {row["Value"]}' + u'\N{DEGREE SIGN}C' + '\n'
             if row["Parameter"] == "Humidity":
                 final_string += f'**{row["Parameter"]}** : {row["Value"]}%\n'
+            if row["Parameter"] == "Light":
+                final_string += f'**{row["Parameter"]}** : {row["Value"]}%\n'
             line_count += 1
         print(f'Processed {line_count} lines.')
         return final_string
@@ -46,6 +57,22 @@ def read_csv_temperature():
 def read_from_csv_light():
     final_string = ""
     with open('Light_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                print(f'Column names are {", ".join(row)}')
+                line_count += 1
+            print(
+                f'\t{row["Parameter"]} is {row["Value"]}')
+            final_string += f'**{row["Parameter"]}** is {row["Value"]}'
+            line_count += 1
+        print(f'Processed {line_count} lines.')
+        return final_string
+
+def read_from_csv_fan():
+    final_string = ""
+    with open('Fan_file.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
         line_count = 0
         for row in csv_reader:
@@ -84,6 +111,21 @@ async def bread(ctx, number=1):
         message += '🍞'
     await ctx.send(message)
 
+@bot.command(name='forgor', help='~ 💀')
+async def forgor(ctx, number=1):
+    message = ''
+    for i in range(number):
+        message += '💀'
+    await ctx.send(message)
+
+@bot.command(name='rember', help='~ 😋')
+async def forgor(ctx, number=1):
+    message = ''
+    for i in range(number):
+        message += '😋'
+    await ctx.send(message)
+
+
 @bot.command(name='roll_dice', help='~ Simulates rolling dice.')
 async def roll(ctx, number_of_dice=1, number_of_sides=6):
     dice = [
@@ -115,11 +157,14 @@ async def status(ctx):
         url="",
         description="Data processed by the Pi",
         color=discord.Color.purple())
-    embed.set_author(name="Clyvpi-Cord", url="https://discord.gg/fjcydncUkb", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png")
+    embed.set_author(name="Clyvpi-Cord", url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png")
     #embed.set_author(name=ctx.author.display_name, url="https://twitter.com/RealDrewData", icon_url=ctx.author.avatar_url)
     embed.set_thumbnail(url="https://www.raspberrypi.org/app/uploads/2011/10/Raspi-PGB001.png")
-    embed.add_field(name="__*Temperature*__", value=f'''{read_csv_temperature()}''', inline=False)
+    embed.add_field(name="__*ESP Data*__", value=f'''{read_csv_MQTT()}''', inline=False)
     embed.add_field(name="__*LED*__", value=f'''{read_from_csv_light()}''', inline=False)
+    embed.add_field(name="__*Fan*__", value=f'''{read_from_csv_fan()}''', inline=False)
+    embed.add_field(name='__*Commands*__', value=f'''**Control LED** [`!light on/off`]\n**Control Fan** [`!fan on/off`]''', inline=False)
+    await ctx.send("`(This is a test)` The temperature is too high do " + "`!fan on`" + " to turn on the fan")
     await ctx.send(embed=embed)
     await channel.send(embed=embed)
 
@@ -128,7 +173,7 @@ async def status(ctx):
 async def formatting(ctx):
     channel = bot.get_channel(896192318711955477)
     print("Sending the temperature")
-    send_string = read_csv_temperature()
+    send_string = read_csv_MQTT()
     send_string += read_from_csv_light()
 
     await channel.send(str(send_string))
@@ -147,6 +192,20 @@ async def light(ctx, state=""):
     else:
         print("Invalid Light Value")
         await ctx.send("Invalid value for light!")
+
+@bot.command(name='fan', help='~ Testing')
+async def fan(ctx, state=""):
+    if state.upper() == "ON":
+        write_to_csv_fan("ON")
+        print("Turning fan on")
+        await ctx.send("The fan will be turned ON")
+    elif state.upper() == "OFF":
+        write_to_csv_fan("OFF")
+        print("Turning fan off")
+        await ctx.send("The fan will be turned OFF")
+    else:
+        print("Invalid Fan Value")
+        await ctx.send("Invalid value for fan!")
 
 @bot.event
 async def on_command_error(ctx, error):
