@@ -1,20 +1,15 @@
 import dash
+import plotly.graph_objs as go
+import dash_daq as daq
+import csv
 from dash.dependencies import Input, Output
 from dash import dcc
-import dash_daq as daq
 from dash import html
-import csv
 
 app = dash.Dash(__name__)
 
 tempVal = 23
 humidVal = 40
-
-ALLOWED_TYPES = "number"
-
-
-#print("Temp val: ")
-#val = input("Enter your value: ")
 
 def write_to_csv_light(value):
     with open('Light_file.csv', mode='w') as csv_file:
@@ -24,7 +19,35 @@ def write_to_csv_light(value):
         writer.writeheader()
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
-app.layout = html.Div([
+
+#fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 2])])
+
+colors = {
+    'background': 'grey',
+    'text': '#7FDBFF'
+}
+
+fig = {
+    'layout': {
+        'title': 'Test'
+    },
+    'data': [{
+        'x': [1, 2, 3],
+        'y': [3, 1, 2]
+    }]
+}
+
+app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+    html.Div([
+        dcc.Graph(id='live-update-graph', animate=True, figure=fig),
+        html.Div(id='live-update-text'),
+        dcc.Interval(
+            id='interval-component',
+            interval=1 * 1000,  # in milliseconds
+            n_intervals=0
+        )
+
+    ]),
     dcc.Input(
         id="TempTextBox",
         type="number",
@@ -59,6 +82,10 @@ app.layout = html.Div([
     html.Div(id='my-toggle-switch-output')
 ])
 
+
+@app.callback(Output('live-update-text', 'children'), Input('interval-component', 'n_intervals'))
+def update_output(n_intervals):
+    return n_intervals
 
 @app.callback(
     Output("TempTextBox", "value"), Input("TempTextBox", "value"))
