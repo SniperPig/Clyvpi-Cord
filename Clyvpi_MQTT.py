@@ -40,7 +40,7 @@ def read_from_csv_dash_publish_Fan():
             print(
                 f'\t{row["Parameter"]} has value {row["Value"]}')
             if row["Parameter"] == "Fan":
-                ValueStorage.Dash_Light = row["Value"]
+                ValueStorage.Dash_Fan = row["Value"]
                 if ValueStorage.Dash_Fan != ValueStorage.Dash_Previous_Fan_Value:
                     ValueStorage.Dash_Previous_Fan_Value = ValueStorage.Dash_Fan
                     client.publish("IoTlab/Fan", str(ValueStorage.Dash_Fan))
