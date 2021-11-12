@@ -17,34 +17,33 @@ def write_to_csv_light(value):
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
 
-colors = {
-    'background': 'grey',
-    'text': '#7FDBFF'
-}
-
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
-    value=23,
-    title={'text': 'Temperature'},
+    value=50,
+    number={'suffix': " C°"},
+    title={'text': 'Temperature:'},
+    # domain={'x': [0.15, 0.8], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [-60, 60]},
-        'shape': "bullet",
+        # 'shape': "bullet",
         'steps': [
             {'range': [-60, 0], 'color': "blue"},
             {'range': [0, 40], 'color': "yellow"},
             {'range': [40, 60], 'color': "red"}
         ],
-        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 23}
+        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 50}
     }
 ))
 
 humGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
     value=60,
-    title={'text': 'Humidity'},
+    number={'suffix': " %"},
+    title={'text': 'Humidity:'},
+    # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [0, 100]},
-        'shape': "bullet",
+        # 'shape': "bullet",
         'steps': [
             {'range': [0, 33], 'color': "blue"},
             {'range': [33, 66], 'color': "yellow"},
@@ -54,20 +53,33 @@ humGaugeUpdate = go.Figure(go.Indicator(
     }
 ))
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
-    html.Div(id='led_output'),
-    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'width': '150vh', 'height': '30vh'}),
-    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'width': '150vh', 'height': '30vh'}),
+app.layout = html.Div(style={'text-align': 'center'}, children=[
+    html.H1('Clyvpi Dashboard', style={'textAlign': 'center'}),
+    html.Br(),
+    html.Br(),
+    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
+    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
     dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
+    html.Br(),
+    html.Br(),
+    html.Br(),
     dcc.Input(
-        id="TempTextBox",
+        id="LightSensorTextBox",
         type="number",
-        placeholder="Temp Threshold",
+        placeholder="Light Sensor Threshold",
     ),
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.Br(),
+    html.H2('Turn LED ON/OFF'),
     daq.ToggleSwitch(
         id='my-toggle-switch',
         value=False
     ),
+    html.Br(),
+    html.Br(),
     html.Div(id='my-toggle-switch-output')
 ])
 
@@ -77,27 +89,26 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 def update_temp_gauge(n_intervals):
     tempGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=23,
-        title={'text': 'Temperature'},
+        value=50,
+        number={'suffix': " C°"},
+        title={'text': 'Temperature:'},
         gauge={
             'axis': {'range': [-60, 60]},
-            'shape': "bullet",
             'steps': [
                 {'range': [-60, 0], 'color': "blue"},
                 {'range': [0, 40], 'color': "yellow"},
                 {'range': [40, 60], 'color': "red"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 23}
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 50}
         }
-
     ))
     humGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
         value=60,
-        title={'text': 'Humidity'},
+        number={'suffix': " %"},
+        title={'text': 'Humidity:'},
         gauge={
             'axis': {'range': [0, 100]},
-            'shape': "bullet",
             'steps': [
                 {'range': [0, 33], 'color': "blue"},
                 {'range': [33, 66], 'color': "yellow"},
@@ -109,7 +120,7 @@ def update_temp_gauge(n_intervals):
     return [tempGaugeUpdate, humGaugeUpdate]
 
 @app.callback(
-    Output("TempTextBox", "value"), Input("TempTextBox", "value"))
+    Output("LightSensorTextBox", "value"), Input("LightSensorTextBox", "value"))
 def update_output(value):
     return value
 
