@@ -8,9 +8,6 @@ from dash import html
 
 app = dash.Dash(__name__)
 
-tempVal = 23
-humidVal = 40
-
 def write_to_csv_light(value):
     with open('Light_file.csv', mode='w') as csv_file:
         fieldnames = ['Parameter', 'Value']
@@ -20,60 +17,52 @@ def write_to_csv_light(value):
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
 
-#fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 2])])
-
 colors = {
     'background': 'grey',
     'text': '#7FDBFF'
 }
 
-fig = {
-    'layout': {
-        'title': 'Test'
-    },
-    'data': [{
-        'x': [1, 2, 3],
-        'y': [3, 1, 2]
-    }]
-}
+tempGaugeUpdate = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=23,
+    title={'text': 'Temperature'},
+    gauge={
+        'axis': {'range': [-60, 60]},
+        'shape': "bullet",
+        'steps': [
+            {'range': [-60, 0], 'color': "blue"},
+            {'range': [0, 40], 'color': "yellow"},
+            {'range': [40, 60], 'color': "red"}
+        ],
+        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 23}
+    }
+))
+
+humGaugeUpdate = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=60,
+    title={'text': 'Humidity'},
+    gauge={
+        'axis': {'range': [0, 100]},
+        'shape': "bullet",
+        'steps': [
+            {'range': [0, 33], 'color': "blue"},
+            {'range': [33, 66], 'color': "yellow"},
+            {'range': [66, 100], 'color': "red"}
+        ],
+        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+    }
+))
 
 app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
-    html.Div([
-        dcc.Graph(id='live-update-graph', animate=True, figure=fig),
-        html.Div(id='live-update-text'),
-        dcc.Interval(
-            id='interval-component',
-            interval=1 * 1000,  # in milliseconds
-            n_intervals=0
-        )
-
-    ]),
+    html.Div(id='led_output'),
+    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'width': '150vh', 'height': '30vh'}),
+    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'width': '150vh', 'height': '30vh'}),
+    dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
     dcc.Input(
         id="TempTextBox",
         type="number",
         placeholder="Temp Threshold",
-    ),
-    daq.Gauge(
-        id='my-gauge-1',
-        label="Temperature",
-        color={"gradient": True, "ranges": {"Blue": [-30, -16], "Yellow": [-16, 20], "Red": [20, 40]}},
-        showCurrentValue=True,
-        units="C",
-        size=200,
-        value=tempVal,
-        max=40,
-        min=-30,
-    ),
-    daq.Gauge(
-        id='my-gauge-2',
-        label="Humidity ",
-        color={"gradient": True, "ranges": {"Blue": [-30, -16], "Yellow": [-16, 20], "Red": [20, 40]}},
-        showCurrentValue=True,
-        units="%",
-        size=200,
-        value=humidVal,
-        max=100,
-        min=0,
     ),
     daq.ToggleSwitch(
         id='my-toggle-switch',
@@ -82,10 +71,42 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
     html.Div(id='my-toggle-switch-output')
 ])
 
+@app.callback([
+    Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], [Input('intervalComponent', 'n_intervals')]
+)
+def update_temp_gauge(n_intervals):
+    tempGaugeUpdate = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=23,
+        title={'text': 'Temperature'},
+        gauge={
+            'axis': {'range': [-60, 60]},
+            'shape': "bullet",
+            'steps': [
+                {'range': [-60, 0], 'color': "blue"},
+                {'range': [0, 40], 'color': "yellow"},
+                {'range': [40, 60], 'color': "red"}
+            ],
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 23}
+        }
 
-@app.callback(Output('live-update-text', 'children'), Input('interval-component', 'n_intervals'))
-def update_output(n_intervals):
-    return n_intervals
+    ))
+    humGaugeUpdate = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=60,
+        title={'text': 'Humidity'},
+        gauge={
+            'axis': {'range': [0, 100]},
+            'shape': "bullet",
+            'steps': [
+                {'range': [0, 33], 'color': "blue"},
+                {'range': [33, 66], 'color': "yellow"},
+                {'range': [66, 100], 'color': "red"}
+            ],
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+        }
+    ))
+    return [tempGaugeUpdate, humGaugeUpdate]
 
 @app.callback(
     Output("TempTextBox", "value"), Input("TempTextBox", "value"))
@@ -101,14 +122,6 @@ def update_output(value):
         ret = "false"
         write_to_csv_light("OFF")
     return 'The switch is {}.'.format(value)
-
-@app.callback(Output('my-gauge-1', 'value'), Input('my-gauge-1', 'value'))
-def update_output(value):
-    return value
-
-@app.callback(Output('my-gauge-2', 'value'), Input('my-gauge-2', 'value'))
-def update_output(value):
-    return value
 
 if __name__ == '__main__':
     app.run_server(debug=True)
