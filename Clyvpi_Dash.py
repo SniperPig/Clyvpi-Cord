@@ -16,6 +16,40 @@ def write_to_csv_light(value):
         writer.writeheader()
         writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
 
+def write_to_csv_light_threshold(value):
+    with open('Light_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'LightThreshold', 'Value': f'{value}'})
+
+def read_csv_MQTT_Temperature():
+    final_string = ""
+    with open('MQTT_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if row["Parameter"] == "Temperature":
+                return row["Value"]
+
+def read_csv_MQTT_Humidity():
+    final_string = ""
+    with open('MQTT_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if row["Parameter"] == "Humidity":
+                return row["Value"]
+
+def read_csv_MQTT_Light():
+    final_string = ""
+    with open('MQTT_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if row["Parameter"] == "Light":
+                return row["Value"]
 
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -63,10 +97,19 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
     html.Br(),
     html.Br(),
     html.Br(),
+    html.H3('Temperature Threshold'),
+    dcc.Input(
+        id="TempTextBox",
+        type="number",
+        placeholder="Temp Sensor Threshold",
+        style={'width': '15%'}
+    ),
+    html.H3('Light Threshold'),
     dcc.Input(
         id="LightSensorTextBox",
         type="number",
         placeholder="Light Sensor Threshold",
+        style={'width': '15%'}
     ),
     html.Br(),
     html.Br(),
@@ -87,9 +130,11 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
     Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], [Input('intervalComponent', 'n_intervals')]
 )
 def update_temp_gauge(n_intervals):
+    tempValMQTT = float(read_csv_MQTT_Temperature())
+    humValMQTT = float(read_csv_MQTT_Humidity())
     tempGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=50,
+        value=tempValMQTT,
         number={'suffix': " C°"},
         title={'text': 'Temperature:'},
         gauge={
@@ -99,25 +144,30 @@ def update_temp_gauge(n_intervals):
                 {'range': [0, 40], 'color': "yellow"},
                 {'range': [40, 60], 'color': "red"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 50}
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': tempValMQTT}
         }
     ))
     humGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=60,
+        value=humValMQTT,
         number={'suffix': " %"},
         title={'text': 'Humidity:'},
         gauge={
             'axis': {'range': [0, 100]},
             'steps': [
-                {'range': [0, 33], 'color': "blue"},
-                {'range': [33, 66], 'color': "yellow"},
-                {'range': [66, 100], 'color': "red"}
+                {'range': [0, 33], 'color': "#b0ebff"},
+                {'range': [33, 66], 'color': "#57d5ff"},
+                {'range': [66, 100], 'color': "#00b2ee"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': humValMQTT}
         }
     ))
     return [tempGaugeUpdate, humGaugeUpdate]
+
+@app.callback(
+    Output("TempTextBox", "value"), Input("TempTextBox", "value"))
+def update_output(value):
+    return value
 
 @app.callback(
     Output("LightSensorTextBox", "value"), Input("LightSensorTextBox", "value"))

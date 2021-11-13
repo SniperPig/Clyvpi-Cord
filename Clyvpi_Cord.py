@@ -154,7 +154,7 @@ async def status(ctx):
     channel = bot.get_channel(896192318711955477)
     embed=discord.Embed(
     title="Pi4 Data (Click for Dashboard)",
-        url="",
+        url="http://127.0.0.1:8050/",
         description="Data processed by the Pi",
         color=discord.Color.purple())
     embed.set_author(name="Clyvpi-Cord", url="https://www.youtube.com/watch?v=dQw4w9WgXcQ", icon_url="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Python-logo-notext.svg/1200px-Python-logo-notext.svg.png")
