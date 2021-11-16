@@ -87,12 +87,31 @@ humGaugeUpdate = go.Figure(go.Indicator(
     }
 ))
 
+lightGaugeUpdate = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=60,
+    number={'suffix': " %"},
+    title={'text': 'Light Intensity:'},
+    # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
+    gauge={
+        'axis': {'range': [0, 100]},
+        # 'shape': "bullet",
+        'steps': [
+            {'range': [0, 33], 'color': "#80A413"},
+            {'range': [33, 66], 'color': "#C8FF00"},
+            {'range': [66, 100], 'color': "#FFE800"}
+        ],
+        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+    }
+))
+
 app.layout = html.Div(style={'text-align': 'center'}, children=[
     html.H1('Clyvpi Dashboard', style={'textAlign': 'center'}),
     html.Br(),
     html.Br(),
     dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
     dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
+    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
     dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
     html.Br(),
     html.Br(),
@@ -127,7 +146,8 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
 ])
 
 @app.callback([
-    Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], [Input('intervalComponent', 'n_intervals')]
+    Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], Output('lightGaugeUpdate', 'figure'),
+    [Input('intervalComponent', 'n_intervals')]
 )
 def update_temp_gauge(n_intervals):
     tempValMQTT = float(read_csv_MQTT_Temperature())
@@ -162,7 +182,24 @@ def update_temp_gauge(n_intervals):
             'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': humValMQTT}
         }
     ))
-    return [tempGaugeUpdate, humGaugeUpdate]
+    lightGaugeUpdate = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=60,
+        number={'suffix': " %"},
+        title={'text': 'Light Intensity:'},
+        # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
+        gauge={
+            'axis': {'range': [0, 100]},
+            # 'shape': "bullet",
+            'steps': [
+                {'range': [0, 33], 'color': "#80A413"},
+                {'range': [33, 66], 'color': "#C8FF00"},
+                {'range': [66, 100], 'color': "#FFE800"}
+            ],
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+        }
+    ))
+    return [tempGaugeUpdate, humGaugeUpdate, lightGaugeUpdate]
 
 @app.callback(
     Output("TempTextBox", "value"), Input("TempTextBox", "value"))
