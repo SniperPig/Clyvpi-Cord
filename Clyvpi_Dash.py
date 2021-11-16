@@ -5,6 +5,7 @@ import csv
 from dash.dependencies import Input, Output
 from dash import dcc
 from dash import html
+import time
 
 app = dash.Dash(__name__)
 
@@ -108,6 +109,9 @@ lightGaugeUpdate = go.Figure(go.Indicator(
 app.layout = html.Div(style={'text-align': 'center'}, children=[
     html.H1('Clyvpi Dashboard', style={'textAlign': 'center'}),
     html.Br(),
+    html.H2('WELCOME: xxx'),
+    html.H3('RFID#: xxx'),
+    html.Br(),
     html.Br(),
     dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
     dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
@@ -152,6 +156,7 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
 def update_temp_gauge(n_intervals):
     tempValMQTT = float(read_csv_MQTT_Temperature())
     humValMQTT = float(read_csv_MQTT_Humidity())
+    lightMQTT = float(read_csv_MQTT_Light())
     tempGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
         value=tempValMQTT,
@@ -184,19 +189,17 @@ def update_temp_gauge(n_intervals):
     ))
     lightGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=60,
+        value=lightMQTT,
         number={'suffix': " %"},
         title={'text': 'Light Intensity:'},
-        # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
         gauge={
             'axis': {'range': [0, 100]},
-            # 'shape': "bullet",
             'steps': [
                 {'range': [0, 33], 'color': "#80A413"},
                 {'range': [33, 66], 'color': "#C8FF00"},
                 {'range': [66, 100], 'color': "#FFE800"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': lightMQTT}
         }
     ))
     return [tempGaugeUpdate, humGaugeUpdate, lightGaugeUpdate]
@@ -209,7 +212,8 @@ def update_output(value):
 @app.callback(
     Output("LightSensorTextBox", "value"), Input("LightSensorTextBox", "value"))
 def update_output(value):
-    return value
+    time.sleep(3)
+    write_to_csv_light_threshold(value)
 
 @app.callback(Output('my-toggle-switch-output', 'children'), Input('my-toggle-switch', 'value'))
 def update_output(value):
