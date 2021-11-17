@@ -6,51 +6,10 @@ from dash.dependencies import Input, Output
 from dash import dcc
 from dash import html
 import time
+import ValueStorage
 
 app = dash.Dash(__name__)
 
-def write_to_csv_light(value):
-    with open('Light_file.csv', mode='w') as csv_file:
-        fieldnames = ['Parameter', 'Value']
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerow({'Parameter': 'Light', 'Value': f'{value}'})
-
-def write_to_csv_light_threshold(value):
-    with open('Light_file.csv', mode='w') as csv_file:
-        fieldnames = ['Parameter', 'Value']
-        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-        writer.writeheader()
-        writer.writerow({'Parameter': 'LightThreshold', 'Value': f'{value}'})
-
-def read_csv_MQTT_Temperature():
-    final_string = ""
-    with open('MQTT_file.csv', mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            if row["Parameter"] == "Temperature":
-                return row["Value"]
-
-def read_csv_MQTT_Humidity():
-    final_string = ""
-    with open('MQTT_file.csv', mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            if row["Parameter"] == "Humidity":
-                return row["Value"]
-
-def read_csv_MQTT_Light():
-    final_string = ""
-    with open('MQTT_file.csv', mode='r') as csv_file:
-        csv_reader = csv.DictReader(csv_file)
-        line_count = 0
-        for row in csv_reader:
-            if row["Parameter"] == "Light":
-                return row["Value"]
 
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -149,14 +108,15 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
     html.Div(id='my-toggle-switch-output')
 ])
 
+
 @app.callback([
     Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], Output('lightGaugeUpdate', 'figure'),
     [Input('intervalComponent', 'n_intervals')]
 )
 def update_temp_gauge(n_intervals):
-    tempValMQTT = float(read_csv_MQTT_Temperature())
-    humValMQTT = float(read_csv_MQTT_Humidity())
-    lightMQTT = float(read_csv_MQTT_Light())
+    tempValMQTT = float(ValueStorage.read_csv_MQTT_Temperature())
+    humValMQTT = float(ValueStorage.read_csv_MQTT_Humidity())
+    lightMQTT = float(ValueStorage.read_csv_MQTT_Light())
     tempGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
         value=tempValMQTT,
@@ -204,26 +164,29 @@ def update_temp_gauge(n_intervals):
     ))
     return [tempGaugeUpdate, humGaugeUpdate, lightGaugeUpdate]
 
+
 @app.callback(
     Output("TempTextBox", "value"), Input("TempTextBox", "value"))
 def update_output(value):
     return value
 
+
 @app.callback(
     Output("LightSensorTextBox", "value"), Input("LightSensorTextBox", "value"))
 def update_output(value):
     time.sleep(3)
-    write_to_csv_light_threshold(value)
+    ValueStorage.write_to_csv_light_threshold(value)
+
 
 @app.callback(Output('my-toggle-switch-output', 'children'), Input('my-toggle-switch', 'value'))
 def update_output(value):
     if value == True:
-        ret = "true"
-        write_to_csv_light("ON")
+        ret = "ON"
     elif value == False:
-        ret = "false"
-        write_to_csv_light("OFF")
+        ret = "OFF"
+    ValueStorage.write_to_csv_light(ret)
     return 'The switch is {}.'.format(value)
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

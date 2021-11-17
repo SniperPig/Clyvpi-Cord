@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import csv
 import ValueStorage
 
+
 def write_to_csv_MQTT():
     with open('MQTT_file.csv', mode='w') as csv_file:
         fieldnames = ['Parameter', 'Value']
