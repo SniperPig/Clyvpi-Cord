@@ -65,7 +65,12 @@ lightGaugeUpdate = go.Figure(go.Indicator(
     }
 ))
 
-app.layout = html.Div(style={'text-align': 'center'}, children=[
+colors = {
+    'background': '#85b4ff',
+    'text': '#7FDBFF'
+}
+
+app.layout = html.Div(style={'text-align': 'center', 'backgroundColor': colors['background']}, children=[
     html.H1('Clyvpi Dashboard', style={'textAlign': 'center'}),
     html.Br(),
     html.H2('WELCOME: xxx'),
@@ -107,7 +112,6 @@ app.layout = html.Div(style={'text-align': 'center'}, children=[
     html.Br(),
     html.Div(id='my-toggle-switch-output')
 ])
-
 
 @app.callback([
     Output('tempGaugeUpdate', 'figure'), Output('humGaugeUpdate', 'figure')], Output('lightGaugeUpdate', 'figure'),
