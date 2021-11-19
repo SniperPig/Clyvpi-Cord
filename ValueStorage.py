@@ -12,6 +12,8 @@ Dash_Threshold_LED = 'OFF'
 Send_Discord_Message = False
 Dash_Previous_Threshold_LED_Value = ''
 
+Scanned_RFID = ''
+
 
 def write_to_csv_light(value):
     with open('Light_file.csv', mode='w') as csv_file:

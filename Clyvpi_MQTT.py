@@ -1,6 +1,29 @@
 import paho.mqtt.client as mqtt
 import csv
+
+import Clyvpi_DB
 import ValueStorage
+
+def write_to_csv_rfid_publish():
+    with open('RFID_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        rfid_value = ValueStorage.Scanned_RFID[2:-1]
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'RFID', 'Value': f'{rfid_value}'})
+
+        name = '';
+        name = Clyvpi_DB.getUserByRfid(rfid_value)
+        if name:
+            print("GRANTED, Welcome " + name[0][0])
+            client.publish("IoTlab/RFIDAccess", "GRANTED")
+        else:
+            print("DENIED")
+            client.publish("IoTlab/RFIDAccess", "DENIED")
+
+
 
 
 def write_to_csv_MQTT():
@@ -56,6 +79,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("IoTlab/temperature")
     client.subscribe("IoTlab/humidity")
     client.subscribe("IoTlab/light")
+    client.subscribe("IoTlab/tag")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -69,6 +93,11 @@ def on_message(client, userdata, msg):
         write_to_csv_MQTT()
         read_from_csv_dash_publish_LED()
         read_from_csv_dash_publish_Fan()
+
+    if msg.topic == "IoTlab/tag":
+        print("Got RFID...")
+        ValueStorage.Scanned_RFID = str(msg.payload)
+        write_to_csv_rfid_publish()
 
 def on_publish(client,userdata,result):             #create function for callback
     print("data published \n")

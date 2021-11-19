@@ -11,7 +11,6 @@ import ValueStorage
 import Clyvpi_DB
 
 
-
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -150,11 +149,14 @@ async def fan(ctx, state=""):
 
 
 @bot.command(name='rfid', help='~ Testing')
-async def rfid(ctx, value="1"):
+async def rfid(ctx, value='1'):
     await ctx.send("testing rfid start...")
-    Clyvpi_DB.rfidInstance(str(value))
     print("Sending rfid " + str(value))
+    Clyvpi_DB.rfidInstance(str(value))
+    name = Clyvpi_DB.getUserByRfid(value)
+    print(name[0])
     await ctx.send("testing rfid end...")
+    await ctx.send("User " + " just swiped his ID")
 
 
 @bot.event
