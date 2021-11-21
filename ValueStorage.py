@@ -6,13 +6,70 @@ MQTT_Light = ''
 Dash_Previous_Light_Value = ''
 Dash_Fan = 'OFF'
 Dash_Previous_Fan_Value = ''
-Dash_Threshold_Light = 15
-Dash_Threshold_Light = 15
-Dash_Threshold_LED = 'OFF'
+Dash_Threshold_Light = ''
+Dash_Threshold_Light_LED = ''
+Dash_Previous_Threshold_Light_LED = ''
+Dash_Threshold_Temp = ''
+Dash_Threshold_Temp_LED = ''
+Dash_Previous_Threshold_Temp_LED = ''
 Send_Discord_Message = False
 Dash_Previous_Threshold_LED_Value = ''
 
 Scanned_RFID = ''
+
+
+def read_from_csv_dash_threshold_temp():
+    with open('Threshold_temp_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            if row["Parameter"] == "Threshold_Temp":
+                return row["Value"]
+
+
+def read_from_csv_dash_threshold_light():
+    final_string = ""
+    with open('Threshold_light_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            if row["Parameter"] == "Threshold_Light":
+                return row["Value"]
+
+
+def write_to_csv_threshold_light_LED():
+    with open('Threshold_light_LED_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Threshold_Light_LED', 'Value': f'{Dash_Threshold_Light_LED}'})
+
+def write_to_csv_threshold_temp_LED():
+    with open('Threshold_temp_LED_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Threshold_Temp_LED', 'Value': f'{Dash_Threshold_Temp_LED}'})
+
+def write_to_csv_threshold_light():
+    with open('Threshold_light_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Threshold_Light', 'Value': f'{Dash_Threshold_Light}'})
+
+def write_to_csv_threshold_temp():
+    with open('Threshold_temp_file.csv', mode='w') as csv_file:
+        fieldnames = ['Parameter', 'Value']
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+
+        writer.writeheader()
+        writer.writerow({'Parameter': 'Threshold_Temp', 'Value': f'{Dash_Threshold_Temp}'})
 
 
 def write_to_csv_light(value):

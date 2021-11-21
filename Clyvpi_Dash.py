@@ -87,6 +87,7 @@ app.layout = html.Div(style={'text-align': 'center', 'backgroundColor': colors['
     html.H3('Temperature Threshold'),
     dcc.Input(
         id="TempTextBox",
+        value=ValueStorage.read_from_csv_dash_threshold_temp(),
         type="number",
         placeholder="Temp Sensor Threshold",
         style={'width': '15%'}
@@ -94,6 +95,7 @@ app.layout = html.Div(style={'text-align': 'center', 'backgroundColor': colors['
     html.H3('Light Threshold'),
     dcc.Input(
         id="LightSensorTextBox",
+        value=ValueStorage.read_from_csv_dash_threshold_light(),
         type="number",
         placeholder="Light Sensor Threshold",
         style={'width': '15%'}
@@ -172,6 +174,9 @@ def update_temp_gauge(n_intervals):
 @app.callback(
     Output("TempTextBox", "value"), Input("TempTextBox", "value"))
 def update_output(value):
+    time.sleep(3)
+    ValueStorage.Dash_Threshold_Temp = value
+    ValueStorage.write_to_csv_threshold_temp()
     return value
 
 
@@ -179,7 +184,9 @@ def update_output(value):
     Output("LightSensorTextBox", "value"), Input("LightSensorTextBox", "value"))
 def update_output(value):
     time.sleep(3)
-    ValueStorage.write_to_csv_light_threshold(value)
+    ValueStorage.Dash_Threshold_Light = value
+    ValueStorage.write_to_csv_threshold_light()
+    return value
 
 
 @app.callback(Output('my-toggle-switch-output', 'children'), Input('my-toggle-switch', 'value'))
