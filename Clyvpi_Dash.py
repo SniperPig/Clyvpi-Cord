@@ -1,4 +1,5 @@
 import dash
+import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 import dash_daq as daq
 import csv
@@ -8,8 +9,7 @@ from dash import html
 import time
 import ValueStorage
 
-app = dash.Dash(__name__)
-
+app = dash.Dash(external_stylesheets=[dbc.themes.SKETCHY])
 
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -19,7 +19,8 @@ tempGaugeUpdate = go.Figure(go.Indicator(
     # domain={'x': [0.15, 0.8], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [-60, 60]},
-        # 'shape': "bullet",
+        'bar': {'color': "black"},
+        'borderwidth': 7,
         'steps': [
             {'range': [-60, 0], 'color': "blue"},
             {'range': [0, 40], 'color': "yellow"},
@@ -37,7 +38,8 @@ humGaugeUpdate = go.Figure(go.Indicator(
     # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [0, 100]},
-        # 'shape': "bullet",
+        'bar': {'color': "black"},
+        'borderwidth': 7,
         'steps': [
             {'range': [0, 33], 'color': "blue"},
             {'range': [33, 66], 'color': "yellow"},
@@ -55,7 +57,8 @@ lightGaugeUpdate = go.Figure(go.Indicator(
     # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [0, 100]},
-        # 'shape': "bullet",
+        'bar': {'color': "black"},
+        'borderwidth': 7,
         'steps': [
             {'range': [0, 33], 'color': "#80A413"},
             {'range': [33, 66], 'color': "#C8FF00"},
@@ -66,7 +69,7 @@ lightGaugeUpdate = go.Figure(go.Indicator(
 ))
 
 colors = {
-    'background': '#85b4ff',
+    'background': '#45FFAE',
     'text': '#7FDBFF'
 }
 
@@ -77,9 +80,9 @@ app.layout = html.Div(style={'text-align': 'center', 'backgroundColor': colors['
     html.H3('RFID#: xxx'),
     html.Br(),
     html.Br(),
-    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
-    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
-    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '48%'}),
+    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
+    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
+    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
     dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
     html.Br(),
     html.Br(),
@@ -130,6 +133,8 @@ def update_temp_gauge(n_intervals):
         title={'text': 'Temperature:'},
         gauge={
             'axis': {'range': [-60, 60]},
+            'bar': {'color': "black"},
+            'borderwidth': 7,
             'steps': [
                 {'range': [-60, 0], 'color': "blue"},
                 {'range': [0, 40], 'color': "yellow"},
@@ -145,6 +150,8 @@ def update_temp_gauge(n_intervals):
         title={'text': 'Humidity:'},
         gauge={
             'axis': {'range': [0, 100]},
+            'bar': {'color': "black"},
+            'borderwidth': 7,
             'steps': [
                 {'range': [0, 33], 'color': "#b0ebff"},
                 {'range': [33, 66], 'color': "#57d5ff"},
@@ -160,6 +167,8 @@ def update_temp_gauge(n_intervals):
         title={'text': 'Light Intensity:'},
         gauge={
             'axis': {'range': [0, 100]},
+            'bar': {'color': "black"},
+            'borderwidth': 7,
             'steps': [
                 {'range': [0, 33], 'color': "#80A413"},
                 {'range': [33, 66], 'color': "#C8FF00"},
