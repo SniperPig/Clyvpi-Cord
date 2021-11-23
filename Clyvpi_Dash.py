@@ -9,109 +9,125 @@ from dash import html
 import time
 import ValueStorage
 
-app = dash.Dash(external_stylesheets=[dbc.themes.SKETCHY])
+app = dash.Dash(external_stylesheets=[dbc.themes.VAPOR])
 
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
-    value=50,
+    value=1,
     number={'suffix': " C°"},
-    title={'text': 'Temperature:'},
-    # domain={'x': [0.15, 0.8], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [-60, 60]},
-        'bar': {'color': "black"},
-        'borderwidth': 7,
+        'bar': {'color': "black", 'thickness': 0.25},
+        'borderwidth': 6,
+        'bordercolor': "black",
         'steps': [
             {'range': [-60, 0], 'color': "blue"},
             {'range': [0, 40], 'color': "yellow"},
             {'range': [40, 60], 'color': "red"}
         ],
-        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 50}
+        'threshold': {'line': {'color': "black", 'width': 4},
+                      'thickness': 0.75,
+                      'value': 1}
     }
 ))
+tempGaugeUpdate.update_layout(title="Temperature:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                              margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
 
 humGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
-    value=60,
+    value=1,
     number={'suffix': " %"},
-    title={'text': 'Humidity:'},
-    # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [0, 100]},
-        'bar': {'color': "black"},
-        'borderwidth': 7,
+        'bar': {'color': "black", 'thickness': 0.25},
+        'borderwidth': 6,
+        'bordercolor': "black",
         'steps': [
-            {'range': [0, 33], 'color': "blue"},
-            {'range': [33, 66], 'color': "yellow"},
-            {'range': [66, 100], 'color': "red"}
+            {'range': [0, 33], 'color': "#b0ebff"},
+            {'range': [33, 66], 'color': "#57d5ff"},
+            {'range': [66, 100], 'color': "#00b2ee"}
         ],
-        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+        'threshold': {'line': {'color': "black", 'width': 4},
+                      'thickness': 0.75,
+                      'value': 1}
     }
+
 ))
+humGaugeUpdate.update_layout(title="Humidity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                             margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
 
 lightGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
-    value=60,
+    value=1,
     number={'suffix': " %"},
-    title={'text': 'Light Intensity:'},
-    # domain={'x': [0.1, 1], 'y': [0.2, 0.9]},
     gauge={
         'axis': {'range': [0, 100]},
-        'bar': {'color': "black"},
-        'borderwidth': 7,
+        'bar': {'color': "black", 'thickness': 0.25},
+        'borderwidth': 6,
+        'bordercolor': "black",
         'steps': [
             {'range': [0, 33], 'color': "#80A413"},
             {'range': [33, 66], 'color': "#C8FF00"},
             {'range': [66, 100], 'color': "#FFE800"}
         ],
-        'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': 60}
+        'threshold':
+            {'line': {'color': "black", 'width': 4},
+             'thickness': 0.75,
+             'value': 1}
     }
 ))
+lightGaugeUpdate.update_layout(title="Light Intensity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                               margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
 
-colors = {
-    'background': '#45FFAE',
-    'text': '#7FDBFF'
-}
-
-app.layout = html.Div(style={'text-align': 'center', 'backgroundColor': colors['background']}, children=[
-    html.H1('Clyvpi Dashboard', style={'textAlign': 'center'}),
+app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, children=[
+    html.B(html.P('Clyvpi Dashboard', style={'fontSize': 60, 'textAlign': 'center'})),
     html.Br(),
-    html.H2('WELCOME: xxx'),
-    html.H3('RFID#: xxx'),
+    html.Div(children=[
+        html.H3('WELCOME, SussyBaka.'),
+        html.H4('RFID#: 4206942069'),
+    ], style={'text-align': 'left'}),
     html.Br(),
     html.Br(),
-    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
-    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
-    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '30%'}),
+    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
+    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
+    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
     dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
     html.Br(),
     html.Br(),
     html.Br(),
-    html.H3('Temperature Threshold'),
-    dcc.Input(
-        id="TempTextBox",
-        value=ValueStorage.read_from_csv_dash_threshold_temp(),
-        type="number",
-        placeholder="Temp Sensor Threshold",
-        style={'width': '15%'}
-    ),
-    html.H3('Light Threshold'),
-    dcc.Input(
-        id="LightSensorTextBox",
-        value=ValueStorage.read_from_csv_dash_threshold_light(),
-        type="number",
-        placeholder="Light Sensor Threshold",
-        style={'width': '15%'}
-    ),
-    html.Br(),
-    html.Br(),
+
+    html.Div(children=[
+        html.H4('Input Temperature Threshold:'),
+        dcc.Input(
+            id="TempTextBox",
+            size='400',
+            value=ValueStorage.read_from_csv_dash_threshold_temp(),
+            type="number",
+            placeholder="Temp Sensor Threshold",
+            style={'width': '14%', 'height': 40, 'fontSize': 30}
+        ),
+    ], style={'display': 'inline-block'}),
+
+    html.Div(children=[
+        html.H4('Input Light Threshold:'),
+        dcc.Input(
+            id="LightSensorTextBox",
+            value=ValueStorage.read_from_csv_dash_threshold_light(),
+            type="number",
+            placeholder="Light Sensor Threshold",
+            style={'width': '14%', 'height': 40, 'fontSize': 30}
+        ),
+    ], style={'display': 'inline-block'}),
+
     html.Br(),
     html.Br(),
     html.Br(),
     html.H2('Turn LED ON/OFF'),
     daq.ToggleSwitch(
         id='my-toggle-switch',
-        value=False
+        value=False,
+        size=90,
+        color="#B5A5FF"
     ),
     html.Br(),
     html.Br(),
@@ -130,53 +146,70 @@ def update_temp_gauge(n_intervals):
         mode="gauge+number",
         value=tempValMQTT,
         number={'suffix': " C°"},
-        title={'text': 'Temperature:'},
         gauge={
             'axis': {'range': [-60, 60]},
-            'bar': {'color': "black"},
-            'borderwidth': 7,
+            'bar': {'color': "black", 'thickness': 0.25},
+            'borderwidth': 6,
+            'bordercolor': "black",
             'steps': [
                 {'range': [-60, 0], 'color': "blue"},
                 {'range': [0, 40], 'color': "yellow"},
                 {'range': [40, 60], 'color': "red"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': tempValMQTT}
+            'threshold': {'line': {'color': "black", 'width': 4},
+                          'thickness': 0.75,
+                          'value': tempValMQTT}
         }
     ))
+    tempGaugeUpdate.update_layout(title="Temperature:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                                  margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+
     humGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
         value=humValMQTT,
         number={'suffix': " %"},
-        title={'text': 'Humidity:'},
         gauge={
             'axis': {'range': [0, 100]},
-            'bar': {'color': "black"},
-            'borderwidth': 7,
+            'bar': {'color': "black", 'thickness': 0.25},
+            'borderwidth': 6,
+            'bordercolor': "black",
             'steps': [
                 {'range': [0, 33], 'color': "#b0ebff"},
                 {'range': [33, 66], 'color': "#57d5ff"},
                 {'range': [66, 100], 'color': "#00b2ee"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': humValMQTT}
+            'threshold': {'line': {'color': "black", 'width': 4},
+                          'thickness': 0.75,
+                          'value': humValMQTT}
         }
+
     ))
+    humGaugeUpdate.update_layout(title="Humidity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                                 margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+
     lightGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
         value=lightMQTT,
         number={'suffix': " %"},
-        title={'text': 'Light Intensity:'},
         gauge={
             'axis': {'range': [0, 100]},
-            'bar': {'color': "black"},
-            'borderwidth': 7,
+            'bar': {'color': "black", 'thickness': 0.25},
+            'borderwidth': 6,
+            'bordercolor': "black",
             'steps': [
                 {'range': [0, 33], 'color': "#80A413"},
                 {'range': [33, 66], 'color': "#C8FF00"},
                 {'range': [66, 100], 'color': "#FFE800"}
             ],
-            'threshold': {'line': {'color': "black", 'width': 10}, 'thickness': 0.75, 'value': lightMQTT}
+            'threshold':
+                {'line': {'color': "black", 'width': 4},
+                 'thickness': 0.75,
+                 'value': lightMQTT}
         }
     ))
+    lightGaugeUpdate.update_layout(title="Light Intensity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
+                                   margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+
     return [tempGaugeUpdate, humGaugeUpdate, lightGaugeUpdate]
 
 
@@ -205,8 +238,7 @@ def update_output(value):
     elif value == False:
         ret = "OFF"
     ValueStorage.write_to_csv_light(ret)
-    return 'The switch is {}.'.format(value)
-
+    # return 'The switch is {}.'.format(value)
 
 if __name__ == '__main__':
     app.run_server(debug=True)
