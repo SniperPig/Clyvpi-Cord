@@ -147,6 +147,13 @@ async def fan(ctx, state=""):
         print("Invalid Fan Value")
         await ctx.send("Invalid value for fan!")
 
+# Comment this event when not using the Voice Assistant
+# @bot.event
+# async def on_message(message):
+#     if message.content == '!light on':
+#         await light(message.channel, "ON")
+#     if message.content == '!light off':
+#         await light(message.channel, "OFF")
 
 @bot.command(name='rfid', help='~ Testing')
 async def rfid(ctx, value='1'):

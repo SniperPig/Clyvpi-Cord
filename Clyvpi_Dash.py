@@ -9,7 +9,7 @@ from dash import html
 import time
 import ValueStorage
 
-app = dash.Dash(external_stylesheets=[dbc.themes.VAPOR])
+app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
 tempGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -31,7 +31,7 @@ tempGaugeUpdate = go.Figure(go.Indicator(
     }
 ))
 tempGaugeUpdate.update_layout(title="Temperature:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                              margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                              margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
 humGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -54,7 +54,7 @@ humGaugeUpdate = go.Figure(go.Indicator(
 
 ))
 humGaugeUpdate.update_layout(title="Humidity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                             margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                             margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
 lightGaugeUpdate = go.Figure(go.Indicator(
     mode="gauge+number",
@@ -77,7 +77,7 @@ lightGaugeUpdate = go.Figure(go.Indicator(
     }
 ))
 lightGaugeUpdate.update_layout(title="Light Intensity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                               margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                               margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
 app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, children=[
     html.B(html.P('Clyvpi Dashboard', style={'fontSize': 60, 'textAlign': 'center'})),
@@ -88,9 +88,9 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
     ], style={'text-align': 'left'}),
     html.Br(),
     html.Br(),
-    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
-    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
-    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px blue double", 'border-radius': 5}),
+    dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px black double", 'border-radius': 5}),
+    dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px black double", 'border-radius': 5}),
+    dcc.Graph(id='lightGaugeUpdate', figure=lightGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px black double", 'border-radius': 5}),
     dcc.Interval(id='intervalComponent', interval=1 * 3000, n_intervals=0),
     html.Br(),
     html.Br(),
@@ -104,7 +104,7 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
             value=ValueStorage.read_from_csv_dash_threshold_temp(),
             type="number",
             placeholder="Temp Sensor Threshold",
-            style={'width': '14%', 'height': 40, 'fontSize': 30}
+            style={'width': '20%', 'height': 40, 'fontSize': 30}
         ),
     ], style={'display': 'inline-block'}),
 
@@ -115,7 +115,7 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
             value=ValueStorage.read_from_csv_dash_threshold_light(),
             type="number",
             placeholder="Light Sensor Threshold",
-            style={'width': '14%', 'height': 40, 'fontSize': 30}
+            style={'width': '20%', 'height': 40, 'fontSize': 30}
         ),
     ], style={'display': 'inline-block'}),
 
@@ -162,7 +162,7 @@ def update_temp_gauge(n_intervals):
         }
     ))
     tempGaugeUpdate.update_layout(title="Temperature:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                                  margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                                  margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
     humGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -185,7 +185,7 @@ def update_temp_gauge(n_intervals):
 
     ))
     humGaugeUpdate.update_layout(title="Humidity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                                 margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                                 margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
     lightGaugeUpdate = go.Figure(go.Indicator(
         mode="gauge+number",
@@ -208,7 +208,7 @@ def update_temp_gauge(n_intervals):
         }
     ))
     lightGaugeUpdate.update_layout(title="Light Intensity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
-                                   margin_l=55, margin_r=55, paper_bgcolor="#B5A5FF", height=330, font_size=20)
+                                   margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
     return [tempGaugeUpdate, humGaugeUpdate, lightGaugeUpdate]
 
