@@ -106,21 +106,23 @@ def getBluetoothDevicesWithRSSI():
         rssi_q = device.request_rssi()
         rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
         result += str(x)
-        result += ' => RSSI: ' + str(rssi_q_int) + '\n'
+        result += ' => RSSI: ' + str(rssi_q_int)
 
     return result
 
 def inputRSSIVal(user_rssi_val):
-    rssi_devices = bluetooth.discover_devices(lookup_names=True)
-
-    for x in rssi_devices:
+    # rssi_devices = bluetooth.discover_devices(lookup_names=True)
+    result = ''
+    for x in devices:
         device = BluetoothRSSI(x[0])
         rssi_q = device.request_rssi()
         rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
 
         if (rssi_q_int < user_rssi_val):
-            print(rssi_q_int)
+            result += str(x)
+            result += ' => RSSI: ' + str(rssi_q_int)
 
+    return result
 
 app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, children=[
     html.B(html.P('Clyvpi Dashboard', style={'fontSize': 60, 'textAlign': 'center'})),
@@ -168,7 +170,7 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
         html.H4('RSSI Threshold:'),
         dcc.Input(
             id="RSSITextBox",
-            value=69,
+            value=0,
             type="number",
             placeholder="RSSI Threshold",
             style={'width': '20%', 'height': 40, 'fontSize': 30}
@@ -177,6 +179,7 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
 
     html.Br(),
     html.Br(),
+    html.H5(inputRSSIVal(inputted_RSSI_value)),
     html.Br(),
     html.H2('Turn LED ON/OFF'),
     daq.ToggleSwitch(
@@ -290,6 +293,7 @@ def update_output(value):
     Output("RSSITextBox", "value"), Input("RSSITextBox", "value"))
 def update_output(value):
     time.sleep(3)
+    inputted_RSSI_value = value
     return value
 
 
