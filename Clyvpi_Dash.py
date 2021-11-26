@@ -8,6 +8,8 @@ from dash import dcc
 from dash import html
 import time
 import ValueStorage
+import bluetooth
+import functools
 
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
@@ -243,3 +245,12 @@ def update_output(value):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
+# devices = bluetooth.discover_devices(lookup_names=True)
+#
+# for x in devices:
+#     device = BluetoothRSSI(x[0])
+#     rssi_q = device.request_rssi()
+#     rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
+#
+#     if(rssi_q_int < 90):
+#         print(rssi_q_int)
