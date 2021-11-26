@@ -10,6 +10,9 @@ import time
 import ValueStorage
 import bluetooth
 import functools
+from Clyvpi_Bluetooth import BluetoothRSSI
+
+inputted_RSSI_value = 0
 
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
@@ -81,6 +84,44 @@ lightGaugeUpdate = go.Figure(go.Indicator(
 lightGaugeUpdate.update_layout(title="Light Intensity:", title_x=0.5, title_font_size=30, margin_b=55, margin_t=55,
                                margin_l=55, margin_r=55, paper_bgcolor="#0f0e12", height=330, font_size=20)
 
+devices = bluetooth.discover_devices(lookup_names=True)
+
+def tupleToArray(tup):
+    arr = []
+    for x in tup:
+        arr.extend(x)
+    return arr
+
+def getNumOfBluetoothDevice():
+    numOfDevices = 0
+    for x in devices:
+        numOfDevices += 1
+    return numOfDevices
+
+def getBluetoothDevicesWithRSSI():
+    rssi_q_int = 0
+    result = ''
+    for x in devices:
+        device = BluetoothRSSI(x[0])
+        rssi_q = device.request_rssi()
+        rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
+        result += str(x)
+        result += ' => RSSI: ' + str(rssi_q_int) + '\n'
+
+    return result
+
+def inputRSSIVal(user_rssi_val):
+    rssi_devices = bluetooth.discover_devices(lookup_names=True)
+
+    for x in rssi_devices:
+        device = BluetoothRSSI(x[0])
+        rssi_q = device.request_rssi()
+        rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
+
+        if (rssi_q_int < user_rssi_val):
+            print(rssi_q_int)
+
+
 app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, children=[
     html.B(html.P('Clyvpi Dashboard', style={'fontSize': 60, 'textAlign': 'center'})),
     html.Br(),
@@ -89,6 +130,8 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
         html.H4('RFID#: 4206942069'),
     ], style={'text-align': 'left'}),
     html.Br(),
+    html.H5('Number of Bluetooth Devices: ' + str(getNumOfBluetoothDevice())),
+    html.H5(getBluetoothDevicesWithRSSI()),
     html.Br(),
     dcc.Graph(id='tempGaugeUpdate', figure=tempGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px black double", 'border-radius': 5}),
     dcc.Graph(id='humGaugeUpdate', figure=humGaugeUpdate, style={'display': 'inline-block', 'width': '30%', 'border': "9px black double", 'border-radius': 5}),
@@ -117,6 +160,17 @@ app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, 
             value=ValueStorage.read_from_csv_dash_threshold_light(),
             type="number",
             placeholder="Light Sensor Threshold",
+            style={'width': '20%', 'height': 40, 'fontSize': 30}
+        ),
+    ], style={'display': 'inline-block'}),
+
+    html.Div(children=[
+        html.H4('RSSI Threshold:'),
+        dcc.Input(
+            id="RSSITextBox",
+            value=69,
+            type="number",
+            placeholder="RSSI Threshold",
             style={'width': '20%', 'height': 40, 'fontSize': 30}
         ),
     ], style={'display': 'inline-block'}),
@@ -232,6 +286,12 @@ def update_output(value):
     ValueStorage.write_to_csv_threshold_light()
     return value
 
+@app.callback(
+    Output("RSSITextBox", "value"), Input("RSSITextBox", "value"))
+def update_output(value):
+    time.sleep(3)
+    return value
+
 
 @app.callback(Output('my-toggle-switch-output', 'children'), Input('my-toggle-switch', 'value'))
 def update_output(value):
@@ -245,12 +305,5 @@ def update_output(value):
 if __name__ == '__main__':
     app.run_server(debug=True)
 
-# devices = bluetooth.discover_devices(lookup_names=True)
-#
-# for x in devices:
-#     device = BluetoothRSSI(x[0])
-#     rssi_q = device.request_rssi()
-#     rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
-#
-#     if(rssi_q_int < 90):
-#         print(rssi_q_int)
+
+
