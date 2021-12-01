@@ -11,17 +11,22 @@ def write_to_csv_rfid_publish():
 
         rfid_value = ValueStorage.Scanned_RFID[2:-1]
 
-        writer.writeheader()
-        writer.writerow({'Parameter': 'RFID', 'Value': f'{rfid_value}'})
-
         name = '';
         name = Clyvpi_DB.getUserByRfid(rfid_value)
         if name:
             print("GRANTED, Welcome " + name[0][0])
             client.publish("IoTlab/RFIDAccess", "GRANTED")
+            writer.writeheader()
+            writer.writerow({'Parameter': 'RFID', 'Value': f'{rfid_value}'})
+            writer.writerow({'Parameter': 'Name', 'Value': f'{name[0][0]}'})
         else:
             print("DENIED")
             client.publish("IoTlab/RFIDAccess", "DENIED")
+            writer.writeheader()
+            writer.writerow({'Parameter': 'RFID', 'Value': f'{rfid_value}'})
+            writer.writerow({'Parameter': 'Name', 'Value': f'Unknown'})
+
+
 
 
 def write_to_csv_MQTT():

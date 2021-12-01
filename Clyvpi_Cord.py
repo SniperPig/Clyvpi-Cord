@@ -5,7 +5,8 @@ import discord
 
 from dotenv import load_dotenv
 
-from discord.ext import commands
+from discord.ext import commands, tasks
+import asyncio
 import csv
 import ValueStorage
 import Clyvpi_DB
@@ -155,6 +156,7 @@ async def fan(ctx, state=""):
 #     if message.content == '!light off':
 #         await light(message.channel, "OFF")
 
+
 @bot.command(name='rfid', help='~ Testing')
 async def rfid(ctx, value='1'):
     await ctx.send("testing rfid start...")
@@ -166,9 +168,23 @@ async def rfid(ctx, value='1'):
     await ctx.send("User " + " just swiped his ID")
 
 
+@bot.command(name='info', help='~ Testing')
+async def info(ctx, username):
+    print('testing info...')
+    channel = bot.get_channel(896192318711955477)
+    bot.loop.create_task(my_task(channel, ''))
+
+
+async def my_task(ctx, username):
+    while True:
+        # do something
+        await ctx.send("Hello!")
+        await asyncio.sleep(10)
+
 @bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound): # or discord.ext.commands.errors.CommandNotFound as you wrote
         await ctx.send("Unknown command")
+
 
 bot.run(TOKEN)

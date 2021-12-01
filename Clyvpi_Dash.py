@@ -14,6 +14,17 @@ from Clyvpi_Bluetooth import BluetoothRSSI
 
 inputted_RSSI_value = 0
 
+def read_from_csv_rfid():
+    with open('RFID_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            if row["Parameter"] == "RFID":
+                ValueStorage.MQTT_RFID = row["Value"]
+            if row["Parameter"] == "Name":
+                ValueStorage.MQTT_RFID_Name = row["Value"]
+
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
 tempGaugeUpdate = go.Figure(go.Indicator(
@@ -127,9 +138,10 @@ def inputRSSIVal(user_rssi_val):
 app.layout = html.Div(style={'text-align': 'center', 'font-family': 'Candara'}, children=[
     html.B(html.P('Clyvpi Dashboard', style={'fontSize': 60, 'textAlign': 'center'})),
     html.Br(),
+    read_from_csv_rfid(),
     html.Div(children=[
-        html.H3('WELCOME, SussyBaka.'),
-        html.H4('RFID#: 4206942069'),
+        html.H3('WELCOME, ' + f'{ValueStorage.MQTT_RFID_Name}'),
+        html.H4('RFID#: ' + f'{ValueStorage.MQTT_RFID}'),
     ], style={'text-align': 'left'}),
     html.Br(),
     html.H5('Number of Bluetooth Devices: ' + str(getNumOfBluetoothDevice())),

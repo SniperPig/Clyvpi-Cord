@@ -3,6 +3,8 @@ import csv
 MQTT_temperature = ''
 MQTT_humidity = ''
 MQTT_Light = ''
+MQTT_RFID = ''
+MQTT_RFID_Name = ''
 Dash_Previous_Light_Value = ''
 Dash_Fan = 'OFF'
 Dash_Previous_Fan_Value = ''
@@ -17,6 +19,16 @@ Dash_Previous_Threshold_LED_Value = ''
 
 Scanned_RFID = ''
 
+def read_from_csv_rfid():
+    with open('RFID_file.csv', mode='r') as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        for row in csv_reader:
+            print(
+                f'\t{row["Parameter"]} has value {row["Value"]}')
+            if row["Parameter"] == "RFID":
+                MQTT_RFID = row["Value"]
+            if row["Parameter"] == "Name":
+                MQTT_RFID_Name = row["Value"]
 
 def read_from_csv_dash_threshold_temp():
     with open('Threshold_temp_file.csv', mode='r') as csv_file:
