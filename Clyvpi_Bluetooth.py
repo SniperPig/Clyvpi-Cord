@@ -6,7 +6,9 @@ import fcntl
 
 
 class BluetoothRSSI(object):
-    """Object class for getting the RSSI value of a Bluetooth address."""
+    """
+    Object class for getting the RSSI value of a Bluetooth address.
+    """
 
     def __init__(self, addr):
         self.addr = addr
@@ -19,7 +21,9 @@ class BluetoothRSSI(object):
         self.cmd_pkt = None
 
     def prep_cmd_pkt(self):
-        """Prepare the command packet for requesting RSSI."""
+        """
+        Prepare the command packet for requesting RSSI.
+        """
         reqstr = struct.pack(
             b'6sB17s', bt.str2ba(self.addr), bt.ACL_LINK, b'\0' * 17)
         request = array.array('b', reqstr)
@@ -28,21 +32,26 @@ class BluetoothRSSI(object):
         self.cmd_pkt = struct.pack('H', handle)
 
     def connect(self):
-        """Connect to the Bluetooth device."""
+        """
+        Connect to the Bluetooth device.
+        """
         # Connecting via PSM 1 - Service Discovery
         self.bt_sock.connect_ex((self.addr, 1))
         self.connected = True
-    
+
     def close(self):
-        """Close the bluetooth socket."""
+        """
+        Close the bluetooth socket.
+        """
         self.bt_sock.close()
         self.hci_sock.close()
         self.closed = True
 
     def request_rssi(self):
-        """Request the current RSSI value.
-        @return: The RSSI value or None if the device connection fails
-                 (i.e. the device is not in range).
+        """
+        Request the current RSSI value.
+        :return: The RSSI value or None if the device connection fails
+        (i.e. the device is not in range).
         """
         try:
             # If socket is closed, return nothing
