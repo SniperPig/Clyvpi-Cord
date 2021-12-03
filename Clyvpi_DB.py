@@ -1,10 +1,16 @@
 import sqlite3
 from datetime import datetime
 
+# Establishes the database connection.
 con = sqlite3.connect('ClyvpiDatabase.db', detect_types=sqlite3.PARSE_DECLTYPES)
 
 
 def rfidInstance(rfid):
+    """
+    Adds a RFID into the database with the current datetime.
+    :param rfid: the desired RFID
+    :type rfid: int
+    """
     print("Starting rfid DB insert")
     now = datetime.now()
     # dd/mm/YY H:M:S
@@ -17,10 +23,18 @@ def rfidInstance(rfid):
 
 
 def getUserByRfid(rfid):
+    """
+    Gets a user from the database by their RFID tag number.
+    :param rfid: the desired RFID
+    :type rfid: int
+    :return: a user
+    :rtype: str
+    """
     cur = con.cursor()
     print("I am here")
     cur.execute("SELECT FullName FROM User WHERE rfid = :rfid", {"rfid": rfid})
     return cur.fetchall()
+
 
 
 def getThresoldByRfid(rfid):
@@ -28,6 +42,5 @@ def getThresoldByRfid(rfid):
     print("I am here")
     cur.execute("SELECT * FROM treshold WHERE rfid = :rfid", {"rfid": rfid})
     return cur.fetchall()
-
 
 
