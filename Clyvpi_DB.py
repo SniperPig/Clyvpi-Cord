@@ -21,3 +21,13 @@ def getUserByRfid(rfid):
     print("I am here")
     cur.execute("SELECT FullName FROM User WHERE rfid = :rfid", {"rfid": rfid})
     return cur.fetchall()
+
+
+def getThresoldByRfid(rfid):
+    cur = con.cursor()
+    print("I am here")
+    cur.execute("SELECT * FROM treshold WHERE rfid = :rfid", {"rfid": rfid})
+    return cur.fetchall()
+
+
+

@@ -40,6 +40,7 @@ def read_from_csv_dash_threshold_temp():
                 return row["Value"]
 
 
+
 def read_from_csv_dash_threshold_light():
     final_string = ""
     with open('Threshold_light_file.csv', mode='r') as csv_file:
