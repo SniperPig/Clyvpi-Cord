@@ -7,6 +7,8 @@ from dash.dependencies import Input, Output
 from dash import dcc
 from dash import html
 import time
+
+import Clyvpi_DB
 import ValueStorage
 import bluetooth
 import functools
@@ -376,7 +378,9 @@ def update_output(value):
     ValueStorage.Dash_Threshold_Temp = value
     ValueStorage.write_to_csv_threshold_temp()
     # Check currently logged RFID in RFID_file.csv
+    ValueStorage.read_from_csv_rfid()
     # Update table for the currently logged user, change the threshold value
+    Clyvpi_DB.updateThresholdTemp(ValueStorage.MQTT_RFID,value)
     return value
 
 
@@ -395,7 +399,9 @@ def update_output(value):
     ValueStorage.Dash_Threshold_Light = value
     ValueStorage.write_to_csv_threshold_light()
     # Check currently logged RFID in RFID_file.csv
+    ValueStorage.read_from_csv_rfid()
     # Update table for the currently logged user, change the threshold value
+    Clyvpi_DB.updateThresholdLight(ValueStorage.MQTT_RFID, value)
     # updateThresholdLight(rfid)
     return value
 
