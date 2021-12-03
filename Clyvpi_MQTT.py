@@ -11,7 +11,6 @@ def write_to_csv_rfid_publish():
 
         rfid_value = ValueStorage.Scanned_RFID[2:-1]
 
-        name = '';
         name = Clyvpi_DB.getUserByRfid(rfid_value)
         if name:
             print("GRANTED, Welcome " + name[0][0])
@@ -19,6 +18,15 @@ def write_to_csv_rfid_publish():
             writer.writeheader()
             writer.writerow({'Parameter': 'RFID', 'Value': f'{rfid_value}'})
             writer.writerow({'Parameter': 'Name', 'Value': f'{name[0][0]}'})
+        #     Query the DB to receive the temp and light thresholds for that user.
+            threshold_values = Clyvpi_DB.getThresoldByRfid(rfid_value)
+            ValueStorage.Dash_Threshold_Light = threshold_values[0]
+            ValueStorage.Dash_Threshold_Temp = threshold_values[1]
+        #     Write the threshold values to the appropriate csv files.
+            ValueStorage.write_to_csv_threshold_light()
+            ValueStorage.write_to_csv_threshold_temp()
+
+
         else:
             print("DENIED")
             client.publish("IoTlab/RFIDAccess", "DENIED")

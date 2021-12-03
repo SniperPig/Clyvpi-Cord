@@ -22,6 +22,7 @@ def rfidInstance(rfid):
     print("Finished rfid DB insert")
 
 
+
 def getUserByRfid(rfid):
     """
     Gets a user from the database by their RFID tag number.
@@ -40,7 +41,15 @@ def getUserByRfid(rfid):
 def getThresoldByRfid(rfid):
     cur = con.cursor()
     print("I am here")
-    cur.execute("SELECT * FROM treshold WHERE rfid = :rfid", {"rfid": rfid})
+    cur.execute("SELECT threshold_light, threshold_temp FROM threshold WHERE rfid = :rfid", {"rfid": rfid})
     return cur.fetchall()
 
+def updateThresholdLight(rfid):
+    cur = con.cursor()
+    cur.execute("UPDATE threshold SET threshold_light = :threshold_light WHERE rfid = :rfid", {"rfid": rfid})
+    return cur.fetchall()
 
+def updateThresholdTemp(rfid):
+    cur = con.cursor()
+    cur.execute("UPDATE threshold SET threshold_temp = :threshold_temp WHERE rfid = :rfid", {"rfid": rfid})
+    return cur.fetchall()
