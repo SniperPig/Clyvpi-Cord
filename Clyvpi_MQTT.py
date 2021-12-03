@@ -11,7 +11,6 @@ def write_to_csv_rfid_publish():
 
         rfid_value = ValueStorage.Scanned_RFID[2:-1]
 
-        name = '';
         name = Clyvpi_DB.getUserByRfid(rfid_value)
         if name:
             print("GRANTED, Welcome " + name[0][0])

@@ -148,9 +148,9 @@ def get_bluetooth_devices_with_rssi():
     for x in devices:
         device = BluetoothRSSI(x[0])
         rssi_q = device.request_rssi()
-        rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
+        rssi1 = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
         result += str(x)
-        result += ' => RSSI: ' + str(rssi_q_int)
+        result += ' => RSSI: ' + str(rssi1)
 
     return result
 
@@ -166,14 +166,15 @@ def input_rssi_val(user_rssi_val):
     :return: all bluetooth devices that are greater than the inputted RSSI value
     :rtype: str
     """
-    # rssi_devices = bluetooth.discover_devices(lookup_names=True)
+    rssi_devices = bluetooth.discover_devices(lookup_names=True)
     result = ''
-    for x in devices:
+    for x in rssi_devices:
         device = BluetoothRSSI(x[0])
         rssi_q = device.request_rssi()
+        #rssi_int = rssi_q[0][0]
         rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
 
-        if (rssi_q_int < user_rssi_val):
+        if (rssi_q_int > user_rssi_val):
             result += str(x)
             result += ' => RSSI: ' + str(rssi_q_int)
 
