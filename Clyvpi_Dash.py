@@ -375,6 +375,8 @@ def update_output(value):
     time.sleep(3)
     ValueStorage.Dash_Threshold_Temp = value
     ValueStorage.write_to_csv_threshold_temp()
+    # Check currently logged RFID in RFID_file.csv
+    # Update table for the currently logged user, change the threshold value
     return value
 
 
@@ -392,6 +394,9 @@ def update_output(value):
     time.sleep(3)
     ValueStorage.Dash_Threshold_Light = value
     ValueStorage.write_to_csv_threshold_light()
+    # Check currently logged RFID in RFID_file.csv
+    # Update table for the currently logged user, change the threshold value
+    # updateThresholdLight(rfid)
     return value
 
 
