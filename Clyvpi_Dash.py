@@ -176,7 +176,7 @@ def input_rssi_val(user_rssi_val):
         #rssi_int = rssi_q[0][0]
         rssi_q_int = functools.reduce(lambda sub, ele: sub * 10 + ele, rssi_q)
 
-        if (rssi_q_int > user_rssi_val):
+        if abs(rssi_q_int) > user_rssi_val:
             result += str(x)
             result += ' => RSSI: ' + str(rssi_q_int)
 
