@@ -4,14 +4,16 @@ import csv
 import Clyvpi_DB
 import ValueStorage
 
+# Write the value of RFID and user name to the file.
 def write_to_csv_rfid_publish():
     with open('RFID_file.csv', mode='w') as csv_file:
         fieldnames = ['Parameter', 'Value']
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
         rfid_value = ValueStorage.Scanned_RFID[2:-1]
-
+        #  Fetch a user from the database with the RFID value.
         name = Clyvpi_DB.getUserByRfid(rfid_value)
+        # If a name has been retrieved, write to file with tthe name.
         if name:
             print("GRANTED, Welcome " + name[0][0])
             client.publish("IoTlab/RFIDAccess", "GRANTED")
@@ -25,8 +27,7 @@ def write_to_csv_rfid_publish():
         #     Write the threshold values to the appropriate csv files.
             ValueStorage.write_to_csv_threshold_light()
             ValueStorage.write_to_csv_threshold_temp()
-
-
+        # If no name has been retrieved, write to file with "Unknown" as the name with the correct RFID.
         else:
             print("DENIED")
             client.publish("IoTlab/RFIDAccess", "DENIED")
@@ -35,8 +36,7 @@ def write_to_csv_rfid_publish():
             writer.writerow({'Parameter': 'Name', 'Value': f'Unknown'})
 
 
-
-
+# The MQTT data is written in the same file, since it is all processed at the same time
 def write_to_csv_MQTT():
     with open('MQTT_file.csv', mode='w') as csv_file:
         fieldnames = ['Parameter', 'Value']
@@ -65,6 +65,7 @@ def read_from_csv_dash_publish_LED():
                     client.publish("IoTlab/LEDLight", str(ValueStorage.Dash_Light))
             line_count += 1
 
+
 def read_from_csv_dash_publish_Fan():
     final_string = ""
     with open('Fan_file.csv', mode='r') as csv_file:
@@ -82,6 +83,7 @@ def read_from_csv_dash_publish_Fan():
                     client.publish("IoTlab/Fan", str(ValueStorage.Dash_Fan))
             line_count += 1
 
+
 def read_from_csv_dash_publish_threshold_temp_light_LED():
     with open('Threshold_temp_LED_file.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -98,6 +100,7 @@ def read_from_csv_dash_publish_threshold_temp_light_LED():
             if row["Parameter"] == "Threshold_Light_LED":
                 ValueStorage.Dash_Threshold_Light_LED = row["Value"]
 
+
 def read_from_csv_dash_publish_threshold_temp():
     with open('Threshold_temp_file.csv', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -112,6 +115,7 @@ def read_from_csv_dash_publish_threshold_temp():
                     if ValueStorage.Dash_Threshold_Temp_LED != ValueStorage.Dash_Previous_Threshold_Temp_LED:
                         ValueStorage.Dash_Previous_Threshold_Temp_LED = ValueStorage.Dash_Threshold_Temp_LED
                         client.publish("IoTlab/ThresholdTemp", "OFF")
+
 
 def read_from_csv_dash_publish_threshold_light():
     final_string = ""
@@ -141,6 +145,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("IoTlab/light")
     client.subscribe("IoTlab/tag")
 
+
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
@@ -161,6 +166,7 @@ def on_message(client, userdata, msg):
             ValueStorage.Dash_Threshold_Light_LED = 'ON'
         else:
             ValueStorage.Dash_Threshold_Light_LED = 'OFF'
+        # This only sends back data if the light topic is received
         ValueStorage.write_to_csv_threshold_light_LED()
         write_to_csv_MQTT()
         read_from_csv_dash_publish_LED()
@@ -171,6 +177,7 @@ def on_message(client, userdata, msg):
 
     if msg.topic == "IoTlab/tag":
         print("Got RFID...")
+        # Gets the RFID number and sends it for processing.
         ValueStorage.Scanned_RFID = str(msg.payload)
         write_to_csv_rfid_publish()
 
