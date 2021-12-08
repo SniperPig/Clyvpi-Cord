@@ -14,5 +14,5 @@ See this documentation about creating a discord bot and inviting it to your serv
 - Go to the root folder of the project
 - Create a file named ".env"
 In the file, add one line saying: `DISCORD_TOKEN=YOUR_BOT_TOKEN`
-Make sure to replace the the "YOUR_BOT_TOKEN" with the correct bot token.
+Make sure to replace the "YOUR_BOT_TOKEN" with the correct bot token.
 
