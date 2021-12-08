@@ -7,7 +7,7 @@ See this documentation about creating a discord bot and inviting it to your serv
 [How to Create a Discord Bot](https://discordpy.readthedocs.io/en/stable/discord.html)
 
 ## How to Invite Your Bot to Your Server
-[How to Create a Discord Bot](https://discordpy.readthedocs.io/en/stable/discord.html#inviting-your-bot)
+[How to Invite a Discord Bot to Your Server](https://discordpy.readthedocs.io/en/stable/discord.html#inviting-your-bot)
 
 ## Add the Bot Token to the Project
 
