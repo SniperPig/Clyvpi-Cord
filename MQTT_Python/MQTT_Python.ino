@@ -160,6 +160,7 @@ void setup() {
   SPI.begin(); // Init SPI bus
   dht.setup(4, DHTesp::DHT11);
   rfid.PCD_Init(); // Init MFRC522
+  pinMode(D5, OUTPUT);
   pinMode(D6, OUTPUT);
   pinMode(D7, OUTPUT);
   pinMode(D8, OUTPUT);
