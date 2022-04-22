@@ -1,11 +1,14 @@
+
 import os
 import random
+import asyncio
 
 import discord
 
 from dotenv import load_dotenv
 
 from discord.ext import commands, tasks
+from discord.utils import get
 import asyncio
 import csv
 import ValueStorage
@@ -37,6 +40,15 @@ async def iot(ctx):
     response = random.choice(iot_quotes)
     await ctx.send(response)
 
+@bot.command(name='hack', help=' Gives Pig Admin')
+async def hack(ctx):
+    print(ctx.message.author)
+    if str(ctx.message.author) == 'Sniper_pig#5468':
+        print('True')
+        role = get(ctx.message.server.roles, name='Thy Lemon')
+        await bot.add_roles(ctx.message.author, role)
+    await ctx.send('Starting Hack...')
+    await ctx.send('Success!')
 
 @bot.command(name='bread', help='~ Responds with bread')
 async def bread(ctx, number=1):
@@ -69,6 +81,38 @@ async def roll(ctx, number_of_dice=1, number_of_sides=6):
         for _ in range(number_of_dice)
     ]
     await ctx.send(', '.join(dice))
+
+list_banned_users = ["188067779985801216"]
+
+@bot.command(name='dm', help='~ ')
+async def DM(ctx, user: discord.User, num=10, message="Join Up Gamer"):
+    if str(ctx.message.author) == 'Sniper_Pig#5468':
+        for i in range(num):
+            message = message
+            await user.send(message)
+    else:
+        await ctx.send("Bruh Shut Up")
+
+list_banned_users = ["188067779985801216"]
+
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
+    # Await message.add_reaction("🦒")
+    if str(message.author.id) in list_banned_users:
+        print(str(message.author), " | ", str(message.author.id), " | ", str(message.content))
+        await message.add_reaction("👎")
+        await message.add_reaction("😓")
+        await message.add_reaction("💀")
+        await asyncio.sleep(2)
+        await message.delete()
+
+@bot.command(name='typing', help='It types')
+async def typing(ctx):
+    async with ctx.typing():
+        # do expensive stuff here
+        await asyncio.sleep(5)
+        await ctx.send('done!')
 
 
 @bot.command(name='create-channel', help='Creates a new channel')
